@@ -21,15 +21,16 @@ function showQuote() {
     return;
   }
 
-  // Try to find the next unflagged quote
   let attempts = 0;
   while (attempts < quotes.length) {
     const q = quotes[index % quotes.length];
     index++;
 
-    // Skip if flagged
     const flagged = String(q.Flagged).toLowerCase() === "true";
-    if (flagged) {
+    const forceShow = String(q["Force Show"]).toLowerCase() === "true";
+
+    // Skip profane quotes unless Force Show is TRUE
+    if (flagged && !forceShow) {
       attempts++;
       continue;
     }
@@ -40,11 +41,12 @@ function showQuote() {
       text += ` - ${q["TikTok Username"]}`;
     }
 
+    // Display the quote normally
     document.getElementById("quoteBox").innerText = text;
     return;
   }
 
-  // If all quotes are flagged
+  // If all quotes are skipped
   document.getElementById("quoteBox").innerText = "No clean quotes available.";
 }
 
