@@ -1,4 +1,4 @@
-const sheetURL = "https://opensheet.elk.sh/SHEET_ID/Sheet1";
+const sheetURL = "https://opensheet.elk.sh/1uEv7XxCZSaWlbBMiE0kKRyZrOnXh4pPy3gvi-oAnwnY/Form%20Responses%201";
 let quotes = [];
 let index = 0;
 
