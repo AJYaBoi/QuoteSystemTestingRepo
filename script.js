@@ -27,11 +27,12 @@ function showQuote() {
     const q = quotes[index % quotes.length];
     index++;
 
-    // Convert Flagged to boolean
+    // Convert Flagged and Force Show to booleans
     const flagged = String(q.Flagged).toLowerCase() === "true";
+    const forceShow = String(q["Force Show"] || "").toLowerCase() === "true";
 
-    // Skip flagged quotes
-    if (flagged) {
+    // Skip flagged quotes unless Force Show is TRUE
+    if (flagged && !forceShow) {
       attempts++;
       continue;
     }
@@ -42,6 +43,7 @@ function showQuote() {
       text += ` - ${q["TikTok Username"]}`;
     }
 
+    // Display normally (no highlight)
     document.getElementById("quoteBox").innerText = text;
     return;
   }
