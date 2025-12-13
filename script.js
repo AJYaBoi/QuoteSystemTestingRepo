@@ -1,19 +1,33 @@
+const sheetURL = "https://opensheet.elk.sh/1uEv7XxCZSaWlbBMiE0kKRyZrOnXh4pPy3gvi-oAnwnY/Form%20Responses%201";
+
+let quotes = [];
+let index = 0;
+
+async function fetchQuotes() {
+  try {
+    const res = await fetch(sheetURL);
+    quotes = await res.json();
+  } catch (err) {
+    console.error("Failed to fetch sheet:", err);
+  }
+}
+
 function showQuote() {
-  if (!quotes.length) return;
+  if (!quotes || quotes.length === 0) return;
 
   const q = quotes[index % quotes.length];
 
-  // Find the username field safely
-  const usernameKey = Object.keys(q).find(
-    k => k.toLowerCase().includes("tiktok") && k.toLowerCase().includes("user")
-  );
+  // Build the text
+  let text = `"${q.Quote}"`;
 
-  let displayText = `"${q.Quote}"`;
-
-  if (usernameKey && q[usernameKey] && q[usernameKey].trim() !== "") {
-    displayText += ` - ${q[usernameKey]}`;
+  if (q["TikTok Username"] && q["TikTok Username"].trim() !== "") {
+    text += ` - ${q["TikTok Username"]}`;
   }
 
-  document.getElementById("quoteBox").innerText = displayText;
+  document.getElementById("quoteBox").innerText = text;
   index++;
 }
+
+fetchQuotes();
+setInterval(fetchQuotes, 5000); // refresh data
+setInterval(showQuote, 7000);   // rotate quotes
