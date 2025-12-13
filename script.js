@@ -1,24 +1,8 @@
 const sheetURL =
   "https://opensheet.elk.sh/1uEv7XxCZSaWlbBMiE0kKRyZrOnXh4pPy3gvi-oAnwnY/Form%20Responses%201";
 
-// Raw GitHub URL for the profane words JSON
-const profanityURL =
-  "https://raw.githubusercontent.com/zautumnz/profane-words/master/words.json";
-
 let quotes = [];
-let profaneWords = [];
 let index = 0;
-
-// Fetch profane words list
-async function fetchProfaneWords() {
-  try {
-    const res = await fetch(profanityURL);
-    profaneWords = await res.json();
-  } catch (err) {
-    console.error("Failed to fetch profanity list:", err);
-    profaneWords = [];
-  }
-}
 
 // Fetch sheet data
 async function fetchQuotes() {
@@ -31,51 +15,44 @@ async function fetchQuotes() {
   }
 }
 
-// Check if a quote contains any profane word
-function containsProfanity(text) {
-  if (!text) return false;
-  const lower = text.toLowerCase();
-  return profaneWords.some(word => lower.includes(word.toLowerCase()));
-}
-
 function showQuote() {
-  // No data
   if (!quotes.length) {
     document.getElementById("quoteBox").innerText = "";
     return;
   }
 
-  // Try to find the next valid quote
+  // Try to find the next unflagged quote
   let attempts = 0;
   while (attempts < quotes.length) {
     const q = quotes[index % quotes.length];
     index++;
 
-    const text = q.Quote;
+    // Skip if flagged
     const flagged = String(q.Flagged).toLowerCase() === "true";
-
-    // Skip if text has profanity AND not manually flagged to override
-    if (containsProfanity(text) && !flagged) {
+    if (flagged) {
       attempts++;
       continue;
     }
 
-    // Build display string
-    let display = `"${text}"`;
-    if (q["TikTok Username"]) {
-      display += ` - ${q["TikTok Username"]}`;
+    // Build display text
+    let text = `"${q.Quote}"`;
+    if (q["TikTok Username"] && q["TikTok Username"].trim() !== "") {
+      text += ` - ${q["TikTok Username"]}`;
     }
 
-    document.getElementById("quoteBox").innerText = display;
+    document.getElementById("quoteBox").innerText = text;
     return;
   }
 
-  // If we get here, no clean quote to show
+  // If all quotes are flagged
   document.getElementById("quoteBox").innerText = "No clean quotes available.";
 }
 
-fetchProfaneWords();
+// Initial fetch
 fetchQuotes();
-setInterval(fetchProfaneWords, 60_000); // refresh profanity list occasionally
+
+// Refresh sheet every 5 seconds
 setInterval(fetchQuotes, 5000);
+
+// Rotate quotes every 7 seconds
 setInterval(showQuote, 7000);
