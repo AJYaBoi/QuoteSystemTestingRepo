@@ -28,13 +28,20 @@ function showQuote() {
     index++;
 
     // Convert Flagged and Force Show to booleans
-    const flagged = String(q.Flagged).toLowerCase() === "true";
-    const forceShow = String(q["Force Show"] || "").toLowerCase() === "true";
+    const flagged = String(q.Flagged || "").trim().toLowerCase() === "true";
+    const forceShow = String(q["Force Show"] || "").trim().toLowerCase() === "true";
+    const forceHide = String(q["Force Hide"] || "").trim().toLowerCase() === "true";
 
-    // Skip flagged quotes unless Force Show is TRUE
+    // Force Hide always wins
+    if (forceHide) {
+        attempts++;
+        continue;
+    }
+
+    // Skip flagged quotes unless Force Show is enabled
     if (flagged && !forceShow) {
-      attempts++;
-      continue;
+        attempts++;
+        continue;
     }
 
     // Build display text
